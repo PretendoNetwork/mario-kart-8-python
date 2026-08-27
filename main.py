@@ -82,7 +82,7 @@ def mk8_get_nex_password(pid: int) -> str:
 
 
 def mk8_auth_callback(auth_user: AuthenticationUser) -> common.Result:
-    if amkj_service.is_maintenance:
+    if amkj_service.is_maintenance and (auth_user.pid not in amkj_service.whitelist):
         return common.Result.error("Authentication::UnderMaintenance")
     if amkj_service.is_whitelist and (auth_user.pid not in amkj_service.whitelist):
         return common.Result.error("RendezVous::PermissionDenied")
