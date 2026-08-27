@@ -1,4 +1,10 @@
-# Mario Kart 8 NEX server
+# Mario Kart 8 NEX server (The python variant)
+
+This is the currently hosted version of Mario Kart 8 on Pretendo Network.
+[https://github.com/Newtendo-Network/nex_mario_kart_8](The original repo) has stopped development, this fork exists to continue provide maintenance fixes.
+
+> [!IMPORTANT]
+> This server is in **maintenance mode**, no new features will be added. All new efforts should go to [the new repo](https://github.com/PretendoNetwork/mario-kart-8)
 
 # Cloning and building
 
