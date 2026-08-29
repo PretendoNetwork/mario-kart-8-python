@@ -21,8 +21,42 @@ You need:
 Install Python3 and these libs:
 
 - [NintendoClients](https://github.com/kinnay/NintendoClients)
-- ``python -m pip install aioconsole requests pymongo redis grpcio-tools minio``
+- `python -m pip install aioconsole requests pymongo redis grpcio-tools minio`
 
 ```shell
 python -m grpc_tools.protoc --proto_path=grpc --python_out=. --grpc_python_out=. grpc/amkj_service.proto
 ```
+
+# Configuration
+
+The server is configured entirely through environment variables, all prefixed
+with `PN_MK8_`. Variables without a default are **required** - the server
+exits on startup if one is missing.
+
+| Variable                           | Default                  | Description                                                               |
+| ---------------------------------- | ------------------------ | ------------------------------------------------------------------------- |
+| `PN_MK8_NEX_HOST`                  | `0.0.0.0`                | Address the NEX auth/secure servers bind to                               |
+| `PN_MK8_NEX_AUTH_PORT`             | `1223`                   | NEX authentication server port                                            |
+| `PN_MK8_NEX_SECURE_PORT`           | `1224`                   | NEX secure server port                                                    |
+| `PN_MK8_NEX_SECURE_USER_PASSWORD`  | _required_               | Password for the NEX `guest`/secure user                                  |
+| `PN_MK8_NEX_EXTERNAL_ADDRESS`      | _required_               | External IP address clients connect to                                    |
+| `PN_MK8_FRIENDS_GRPC_HOST`         | _required_               | Hostname of the friends gRPC service                                      |
+| `PN_MK8_FRIENDS_GRPC_PORT`         | _required_               | Port of the friends gRPC service                                          |
+| `PN_MK8_FRIENDS_GRPC_API_KEY`      | _required_               | API key for the friends gRPC service                                      |
+| `PN_MK8_ACCOUNT_GRPC_HOST`         | _required_               | Hostname of the account gRPC service                                      |
+| `PN_MK8_ACCOUNT_GRPC_PORT`         | _required_               | Port of the account gRPC service                                          |
+| `PN_MK8_ACCOUNT_GRPC_API_KEY`      | _required_               | API key for the account gRPC service                                      |
+| `PN_MK8_MARIO_KART_8_GRPC_HOST`    | `0.0.0.0`                | Address this server's own gRPC service binds to                           |
+| `PN_MK8_MARIO_KART_8_GRPC_PORT`    | `50051`                  | Port for this server's own gRPC service                                   |
+| `PN_MK8_MARIO_KART_8_GRPC_API_KEY` | _required_               | API key required to call this server's gRPC service                       |
+| `PN_MK8_DB_HOST`                   | `localhost`              | MongoDB host                                                              |
+| `PN_MK8_DB_PORT`                   | `27017`                  | MongoDB port                                                              |
+| `PN_MK8_DB_USERNAME`               | _(none)_                 | MongoDB username; auth is enabled when both username and password are set |
+| `PN_MK8_DB_PASSWORD`               | _(none)_                 | MongoDB password                                                          |
+| `PN_MK8_DB_NAME`                   | `mariokart8`             | MongoDB database name                                                     |
+| `PN_MK8_S3_ENDPOINT_DOMAIN`        | `s3.pretendo.cc`         | S3 endpoint domain (scheme is always `https`)                             |
+| `PN_MK8_S3_ACCESS_KEY`             | _required_               | S3 access key                                                             |
+| `PN_MK8_S3_SECRET_KEY`             | _required_               | S3 secret key                                                             |
+| `PN_MK8_S3_REGION`                 | `us-east-1`              | S3 region                                                                 |
+| `PN_MK8_S3_BUCKET_NAME`            | `pn-amkj-d1`             | S3 bucket used for DataStore objects                                      |
+| `PN_MK8_REDIS_URI`                 | `redis://127.0.0.1:6379` | Redis connection URI                                                      |

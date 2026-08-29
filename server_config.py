@@ -2,6 +2,7 @@ from nintendo.nex import settings
 import pymongo
 import pymongo
 import urllib.parse
+import os
 
 GAME_SERVER_ID = 0x1010EB00
 ACCESS_KEY = "25dbf96a"
@@ -16,23 +17,30 @@ NEX_SETTINGS["prudp.version"] = 1
 NEX_SETTINGS["prudp.max_substream_id"] = 1
 
 
+def readEnv(key: str, default: str = None) -> str:
+    value = os.environ.get("PN_MK8_" + key)
+    if value is None:
+        if default is None:
+            raise Exception("Missing environment variable: PN_MK8_" + key)
+        return default
+    return value
+
+
 class MongoCredentials:
-    def __init__(self, host: str, port: int, use_auth: bool = False, username: str = "", password: str = ""):
+    def __init__(self, host: str, port: int, username: str = "", password: str = ""):
         self.host = host
         self.port = port
-        self.use_auth = use_auth
         self.username = username
         self.password = password
 
     def connect(self):
         # Username and password must be percent-escaped
-        db_use_auth = self.use_auth
         db_user = urllib.parse.quote_plus(self.username)
         db_pass = urllib.parse.quote_plus(self.password)
         db_host = self.host
         db_port = self.port
 
-        if db_use_auth:
+        if db_user and db_pass:
             db_uri = 'mongodb://%s:%s@%s:%d' % (db_user, db_pass, db_host, db_port)
         else:
             db_uri = 'mongodb://%s:%d' % (db_host, db_port)
@@ -42,36 +50,34 @@ class MongoCredentials:
 
 class NEXConfig:
     def __init__(self):
-        self.nex_host = "0.0.0.0"
-        self.nex_auth_port = 1000
-        self.nex_secure_port = 1001
-        self.nex_secure_user_password = "abcdef123456"  # PLEASE, make this a real private password.
-        self.nex_external_address = "147.147.147.147"  # Your external IP, for external clients to connect.
+        self.nex_host = readEnv("NEX_HOST", "0.0.0.0")
+        self.nex_auth_port = int(readEnv("NEX_AUTH_PORT", "1223"))
+        self.nex_secure_port = int(readEnv("NEX_SECURE_PORT", "1224"))
+        self.nex_secure_user_password = readEnv("NEX_SECURE_USER_PASSWORD")
+        # Your external IP, for external clients to connect.
+        self.nex_external_address = readEnv("NEX_EXTERNAL_ADDRESS")
 
-        self.friends_grpc_host = "123.123.123.123"
-        self.friends_grpc_port = 1002
-        self.friends_grpc_api_key = "abcdefghijklmnopqrstuvwxyz123456789"
+        self.friends_grpc_host = readEnv("FRIENDS_GRPC_HOST")
+        self.friends_grpc_port = int(readEnv("FRIENDS_GRPC_PORT"))
+        self.friends_grpc_api_key = readEnv("FRIENDS_GRPC_API_KEY")
 
-        self.account_grpc_host = "124.124.124.124"
-        self.account_grpc_port = 1003
-        self.account_grpc_api_key = "abcdefghijklmnopqrstuvwxyz123456789"
+        self.account_grpc_host = readEnv("ACCOUNT_GRPC_HOST")
+        self.account_grpc_port = int(readEnv("ACCOUNT_GRPC_PORT"))
+        self.account_grpc_api_key = readEnv("ACCOUNT_GRPC_API_KEY")
 
         # These gRPC credentials are for the server we're implementing
-        self.mario_kart_8_grpc_host = "localhost"
-        self.mario_kart_8_grpc_port = 50051
-        self.mario_kart_8_grpc_api_key = "abcdefghijklmnopqrstuvwxyz123456789"
-
-        self.account_database = "pretendo"
-
-        self.pnid_collection = "pnids"
-        self.nex_account_collection = "nexaccounts"
+        self.mario_kart_8_grpc_host = readEnv("MARIO_KART_8_GRPC_HOST", "0.0.0.0")
+        self.mario_kart_8_grpc_port = int(readEnv("MARIO_KART_8_GRPC_PORT", "50051"))
+        self.mario_kart_8_grpc_api_key = readEnv("MARIO_KART_8_GRPC_API_KEY")
 
         self.game_db_server = MongoCredentials(
-            host="222.222.222.222",
-            port=1004
+            host=readEnv("DB_HOST", "localhost"),
+            port=int(readEnv("DB_PORT", "27017")),
+            username=readEnv("DB_USERNAME", ""),
+            password=readEnv("DB_PASSWORD", "")
         )
 
-        self.game_database = "mk8rewrite"
+        self.game_database = readEnv("DB_NAME", "mariokart8")
 
         self.sequence_collection = "counters"
         self.gatherings_collection = "gatherings"
@@ -84,14 +90,14 @@ class NEXConfig:
         self.datastore_collection = "datastore"
         self.restriction_collection = "restrictions"
 
-        self.s3_endpoint_domain = "..."
+        self.s3_endpoint_domain = readEnv("S3_ENDPOINT_DOMAIN", "s3.pretendo.cc")
         self.s3_endpoint = "https://" + self.s3_endpoint_domain
-        self.s3_access_key = "..."
-        self.s3_secret = "..."
-        self.s3_region = "..."
-        self.bucket_name = "amkj"
+        self.s3_access_key = readEnv("S3_ACCESS_KEY")
+        self.s3_secret = readEnv("S3_SECRET_KEY")
+        self.s3_region = readEnv("S3_REGION", "us-east-1")
+        self.bucket_name = readEnv("S3_BUCKET_NAME", "pn-amkj-d1")
 
-        self.redis_uri = "redis://53.53.53.53:1005"  # redis://HOST[:PORT][?db=DATABASE[&password=PASSWORD]]
+        self.redis_uri = readEnv("REDIS_URI", "redis://127.0.0.1:6379")
 
 
 NEX_CONFIG = NEXConfig()
