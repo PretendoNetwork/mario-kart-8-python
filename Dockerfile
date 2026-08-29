@@ -1,7 +1,9 @@
 FROM python:3.11-slim
 
-# Build tools for the few deps without prebuilt wheels (netifaces, cffi, ...).
+# git: nintendoclients is installed from a pinned commit.
+# build-essential/libffi-dev/pkg-config: deps without prebuilt wheels (netifaces, cffi, ...).
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
     build-essential \
     libffi-dev \
     pkg-config \
