@@ -1,5 +1,4 @@
 *.pyc
 __pycache__
-server_config.py
 
 /amkj_service_*.py
