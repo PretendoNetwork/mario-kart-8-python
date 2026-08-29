@@ -60,3 +60,7 @@ exits on startup if one is missing.
 | `PN_MK8_S3_REGION`                 | `us-east-1`              | S3 region                                                                 |
 | `PN_MK8_S3_BUCKET_NAME`            | `pn-amkj-d1`             | S3 bucket used for DataStore objects                                      |
 | `PN_MK8_REDIS_URI`                 | `redis://127.0.0.1:6379` | Redis connection URI                                                      |
+| `PN_MK8_HEALTH_HTTP_HOST`          | `0.0.0.0`                | Address the HTTP health check binds to                                    |
+| `PN_MK8_HEALTH_HTTP_PORT`          | `8080`                   | HTTP health check port (any request returns `200 {"status":"ok"}`)        |
+| `PN_MK8_HEALTH_UDP_HOST`           | `0.0.0.0`                | Address the UDP echo health check binds to                                |
+| `PN_MK8_HEALTH_UDP_PORT`           | `8081`                   | UDP health check port (echoes received datagrams back to the sender)      |

@@ -99,5 +99,10 @@ class NEXConfig:
 
         self.redis_uri = readEnv("REDIS_URI", "redis://127.0.0.1:6379")
 
+        self.health_http_host = readEnv("HEALTH_HTTP_HOST", "0.0.0.0")
+        self.health_http_port = int(readEnv("HEALTH_HTTP_PORT", "8080"))
+        self.health_udp_host = readEnv("HEALTH_UDP_HOST", "0.0.0.0")
+        self.health_udp_port = int(readEnv("HEALTH_UDP_PORT", "8081"))
+
 
 NEX_CONFIG = NEXConfig()

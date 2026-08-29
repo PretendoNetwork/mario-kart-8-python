@@ -27,9 +27,9 @@ COPY . .
 
 # Generate the gRPC stubs (amkj_service_pb2*.py) that main.py imports.
 RUN python -m grpc_tools.protoc \
-        --proto_path=grpc \
-        --python_out=. \
-        --grpc_python_out=. \
-        grpc/amkj_service.proto
+    --proto_path=grpc \
+    --python_out=. \
+    --grpc_python_out=. \
+    grpc/amkj_service.proto
 
 CMD ["python", "main.py"]

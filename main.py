@@ -19,6 +19,7 @@ from nex_protocols_common_py.matchmaking_ext_protocol import CommonMatchMakingSe
 from mk8_matchmake_extension_protocol import MK8MatchmakeExtensionServer
 from mk8_ranking_protocol import MK8RankingServer, mk8_common_data_handler
 from mk8_datastore_protocol import MK8DataStoreServer
+from health_endpoints import serve_health_checks
 
 import grpc
 from amkj_service import AmkjService, amkj_service_pb2_grpc
@@ -236,17 +237,19 @@ async def main():
     amkj_service.bind_ranking_manager(RankingServer.ranking_mgr)
 
     server_key = kerberos.KeyDerivationOld(65000, 1024).derive_key(NEX_CONFIG.nex_secure_user_password.encode("ascii"), pid=2)
-    async with rmc.serve(sett, auth_servers, NEX_CONFIG.nex_host, NEX_CONFIG.nex_auth_port):
-        async with serve_rmc_custom(sett, secure_servers, NEX_CONFIG.nex_host, NEX_CONFIG.nex_secure_port, key=server_key):
-            server = grpc.aio.server(options=(("grpc.primary_user_agent", "Pretendo_MK8_GRPC"),))
-            amkj_service_pb2_grpc.add_AmkjServiceServicer_to_server(amkj_service, server)
+    async with rmc.serve(sett, auth_servers, NEX_CONFIG.nex_host, NEX_CONFIG.nex_auth_port), \
+            serve_rmc_custom(sett, secure_servers, NEX_CONFIG.nex_host, NEX_CONFIG.nex_secure_port, key=server_key), \
+            serve_health_checks(NEX_CONFIG.health_http_host, NEX_CONFIG.health_http_port,
+                                NEX_CONFIG.health_udp_host, NEX_CONFIG.health_udp_port):
+        server = grpc.aio.server(options=(("grpc.primary_user_agent", "Pretendo_MK8_GRPC"),))
+        amkj_service_pb2_grpc.add_AmkjServiceServicer_to_server(amkj_service, server)
 
-            listen_addr = "%s:%d" % (NEX_CONFIG.mario_kart_8_grpc_host, NEX_CONFIG.mario_kart_8_grpc_port)
-            server.add_insecure_port(listen_addr)
-            logging.info("Starting gRPC amkj server on %s", listen_addr)
+        listen_addr = "%s:%d" % (NEX_CONFIG.mario_kart_8_grpc_host, NEX_CONFIG.mario_kart_8_grpc_port)
+        server.add_insecure_port(listen_addr)
+        logging.info("Starting gRPC amkj server on %s", listen_addr)
 
-            await server.start()
-            await aioconsole.ainput("Press enter to exit...\n")
+        await server.start()
+        await aioconsole.ainput("Press enter to exit...\n")
 
 
 async def sync_amkj_status_to_database(task: asyncio.Task):
