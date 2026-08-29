@@ -18,7 +18,7 @@ jmespath==1.0.1
 minio==7.2.5
 multidict==6.0.4
 netifaces==0.11.0
-nintendoclients==0.0.8
+nintendoclients @ git+https://github.com/kinnay/NintendoClients@71fe4d65befb5a49874d09a711e1c121a641575e
 protobuf==4.23.3
 pycparser==2.21
 pycryptodome==3.18.0
