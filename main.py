@@ -4,7 +4,6 @@ from nintendo.nex import rmc, kerberos, common
 import logging
 import asyncio
 import time
-import aioconsole
 import contextlib
 import datetime
 import requests
@@ -255,7 +254,7 @@ async def main():
         logging.info("Starting gRPC amkj server on %s", listen_addr)
 
         await server.start()
-        await aioconsole.ainput("Press enter to exit...\n")
+        await server.wait_for_termination()
 
 
 async def sync_amkj_status_to_database(task: asyncio.Task):
