@@ -173,6 +173,11 @@ async def main():
                                      tournaments_db=GameDatabase[NEX_CONFIG.tournaments_collection],
                                      tournaments_scores_db=GameDatabase[NEX_CONFIG.tournaments_score_collection])
 
+    if NEX_CONFIG.rebuild_rankings_on_start:
+        logging.info("Rebuilding ranking leaderboards in Redis from MongoDB ...")
+        rebuilt = RankingServer.ranking_mgr.rebuild_leaderboards()
+        logging.info("Rebuilt %d leaderboard categories: %s", len(rebuilt), rebuilt)
+
     # ============= Initializing Matchmake Extension Protocol =============
 
     MatchmakeExtensionServer = MK8MatchmakeExtensionServer(sett,

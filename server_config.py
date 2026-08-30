@@ -49,6 +49,9 @@ class NEXConfig:
 
         self.game_database = readEnv("MONGO_DB_NAME", "mariokart8")
 
+        # Rebuild Redis ranking leaderboards from MongoDB on startup.
+        self.rebuild_rankings_on_start = readEnv("REBUILD_RANKINGS_ON_START", "false").lower() == "true"
+
         self.sequence_collection = "counters"
         self.gatherings_collection = "gatherings"
         self.sessions_collection = "sessions"
