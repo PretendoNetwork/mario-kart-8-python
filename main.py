@@ -8,6 +8,8 @@ import aioconsole
 import contextlib
 import datetime
 import requests
+import pymongo
+
 
 from datetime import datetime, timezone
 
@@ -46,7 +48,8 @@ logging.basicConfig(level=logging.INFO)
 
 # ============= Connecting to the database =============
 
-GameDatabase = NEX_CONFIG.game_db_server.connect()[NEX_CONFIG.game_database]
+GameServer = pymongo.MongoClient(NEX_CONFIG.game_db_connection_string, serverSelectionTimeoutMS=3000)
+GameDatabase = GameServer[NEX_CONFIG.game_database]
 
 # ============= Main server program =============
 
@@ -72,13 +75,15 @@ s3_client = Minio(endpoint=NEX_CONFIG.s3_endpoint_domain,
 
 
 def mk8_get_friend_pids(pid: int) -> list[int]:
-    response = friends_service.GetUserFriendPIDs(GetUserFriendPIDsRequest(pid=pid), metadata=[("x-api-key", NEX_CONFIG.friends_grpc_api_key)])
+    response = friends_service.GetUserFriendPIDs(GetUserFriendPIDsRequest(
+        pid=pid), metadata=[("x-api-key", NEX_CONFIG.friends_grpc_api_key)])
     pids = [pids for pids in response.pids]
     return pids
 
 
 def mk8_get_nex_password(pid: int) -> str:
-    response = account_service.GetNEXPassword(GetNEXPasswordRequest(pid=pid), metadata=[("x-api-key", NEX_CONFIG.account_grpc_api_key)])
+    response = account_service.GetNEXPassword(GetNEXPasswordRequest(pid=pid), metadata=[
+                                              ("x-api-key", NEX_CONFIG.account_grpc_api_key)])
     return response.password
 
 
@@ -236,7 +241,8 @@ async def main():
 
     amkj_service.bind_ranking_manager(RankingServer.ranking_mgr)
 
-    server_key = kerberos.KeyDerivationOld(65000, 1024).derive_key(NEX_CONFIG.nex_secure_user_password.encode("ascii"), pid=2)
+    server_key = kerberos.KeyDerivationOld(65000, 1024).derive_key(
+        NEX_CONFIG.nex_secure_user_password.encode("ascii"), pid=2)
     async with rmc.serve(sett, auth_servers, NEX_CONFIG.nex_host, NEX_CONFIG.nex_auth_port), \
             serve_rmc_custom(sett, secure_servers, NEX_CONFIG.nex_host, NEX_CONFIG.nex_secure_port, key=server_key), \
             serve_health_checks(NEX_CONFIG.health_http_host, NEX_CONFIG.health_http_port,

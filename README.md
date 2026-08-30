@@ -49,11 +49,8 @@ exits on startup if one is missing.
 | `PN_MK8_MARIO_KART_8_GRPC_HOST`    | `0.0.0.0`                | Address this server's own gRPC service binds to                           |
 | `PN_MK8_MARIO_KART_8_GRPC_PORT`    | `50051`                  | Port for this server's own gRPC service                                   |
 | `PN_MK8_MARIO_KART_8_GRPC_API_KEY` | _required_               | API key required to call this server's gRPC service                       |
-| `PN_MK8_DB_HOST`                   | `localhost`              | MongoDB host                                                              |
-| `PN_MK8_DB_PORT`                   | `27017`                  | MongoDB port                                                              |
-| `PN_MK8_DB_USERNAME`               | _(none)_                 | MongoDB username; auth is enabled when both username and password are set |
-| `PN_MK8_DB_PASSWORD`               | _(none)_                 | MongoDB password                                                          |
-| `PN_MK8_DB_NAME`                   | `mariokart8`             | MongoDB database name                                                     |
+| `PN_MK8_MONGO_DB_CONNECTION_STRING` | _required_              | MongoDB connection string (e.g. `mongodb://user:pass@host:27017`)         |
+| `PN_MK8_MONGO_DB_NAME`             | `mariokart8`             | MongoDB database name                                                     |
 | `PN_MK8_S3_ENDPOINT_DOMAIN`        | `s3.pretendo.cc`         | S3 endpoint domain (scheme is always `https`)                             |
 | `PN_MK8_S3_ACCESS_KEY`             | _required_               | S3 access key                                                             |
 | `PN_MK8_S3_SECRET_KEY`             | _required_               | S3 secret key                                                             |

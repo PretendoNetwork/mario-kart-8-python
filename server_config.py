@@ -1,7 +1,4 @@
 from nintendo.nex import settings
-import pymongo
-import pymongo
-import urllib.parse
 import os
 
 GAME_SERVER_ID = 0x1010EB00
@@ -26,28 +23,6 @@ def readEnv(key: str, default: str = None) -> str:
     return value
 
 
-class MongoCredentials:
-    def __init__(self, host: str, port: int, username: str = "", password: str = ""):
-        self.host = host
-        self.port = port
-        self.username = username
-        self.password = password
-
-    def connect(self):
-        # Username and password must be percent-escaped
-        db_user = urllib.parse.quote_plus(self.username)
-        db_pass = urllib.parse.quote_plus(self.password)
-        db_host = self.host
-        db_port = self.port
-
-        if db_user and db_pass:
-            db_uri = 'mongodb://%s:%s@%s:%d' % (db_user, db_pass, db_host, db_port)
-        else:
-            db_uri = 'mongodb://%s:%d' % (db_host, db_port)
-
-        return pymongo.MongoClient(db_uri, serverSelectionTimeoutMS=3000)
-
-
 class NEXConfig:
     def __init__(self):
         self.nex_host = readEnv("NEX_HOST", "0.0.0.0")
@@ -70,14 +45,9 @@ class NEXConfig:
         self.mario_kart_8_grpc_port = int(readEnv("MARIO_KART_8_GRPC_PORT", "50051"))
         self.mario_kart_8_grpc_api_key = readEnv("MARIO_KART_8_GRPC_API_KEY")
 
-        self.game_db_server = MongoCredentials(
-            host=readEnv("DB_HOST", "localhost"),
-            port=int(readEnv("DB_PORT", "27017")),
-            username=readEnv("DB_USERNAME", ""),
-            password=readEnv("DB_PASSWORD", "")
-        )
+        self.game_db_connection_string = readEnv("MONGO_DB_CONNECTION_STRING")
 
-        self.game_database = readEnv("DB_NAME", "mariokart8")
+        self.game_database = readEnv("MONGO_DB_NAME", "mariokart8")
 
         self.sequence_collection = "counters"
         self.gatherings_collection = "gatherings"
