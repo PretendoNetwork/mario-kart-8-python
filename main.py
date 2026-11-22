@@ -57,7 +57,8 @@ amkj_service = AmkjService(NEX_CONFIG.mario_kart_8_grpc_api_key,
                            GameDatabase[NEX_CONFIG.gatherings_collection],
                            GameDatabase[NEX_CONFIG.tournaments_collection],
                            GameDatabase[NEX_CONFIG.ranking_common_data_collection],
-                           GameDatabase[NEX_CONFIG.restriction_collection],)
+                           GameDatabase[NEX_CONFIG.restriction_collection],
+                           GameDatabase[NEX_CONFIG.sessions_collection],)
 
 friends_grpc_client = grpc.insecure_channel('%s:%d' % (NEX_CONFIG.friends_grpc_host, NEX_CONFIG.friends_grpc_port))
 friends_service = friends_service_pb2_grpc.FriendsStub(friends_grpc_client)

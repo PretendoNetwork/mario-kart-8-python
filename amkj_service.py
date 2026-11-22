@@ -16,11 +16,12 @@ from google.protobuf.timestamp_pb2 import Timestamp
 
 class AmkjService(amkj_service_pb2_grpc.AmkjServiceServicer):
 
-    def __init__(self, api_key: str, status_db: Collection, gatherings_db: Collection, tournaments_db: Collection, commondata_db: Collection, restrictions_db: Collection):
+    def __init__(self, api_key: str, status_db: Collection, gatherings_db: Collection, tournaments_db: Collection, commondata_db: Collection, restrictions_db: Collection, sessions_db: Collection):
         self.rmc_secure_server = None
         self.api_key = api_key
         self.status_db = status_db
         self.gatherings_db = gatherings_db
+        self.sessions_db = sessions_db
         self.tournaments_db = tournaments_db
         self.commondata_db = commondata_db
         self.restrictions_db = restrictions_db
@@ -41,6 +42,10 @@ class AmkjService(amkj_service_pb2_grpc.AmkjServiceServicer):
 
         self.sync_status_from_database()
         self.sync_status_to_database()
+
+        # On restart, there are broken gatherings in the DB from the previous instance.
+        # This is a workaround to make it work on every restart.
+        self.clear_gatherings()
 
     def bind_ranking_manager(self, ranking_mgr: RankingManager):
         self.ranking_mgr = ranking_mgr
@@ -82,6 +87,10 @@ class AmkjService(amkj_service_pb2_grpc.AmkjServiceServicer):
             self.start_maintenance_time = status["start_maintenance_time"]
             self.end_maintenance_time = status["end_maintenance_time"]
             self.whitelist = status["whitelist"]
+
+    def clear_gatherings(self):
+        self.gatherings_db.delete_many({})
+        self.sessions_db.delete_many({})
 
     async def add_player_connected(self, client: rmc.RMCClient):
         async with self.rmc_clients_lock:
